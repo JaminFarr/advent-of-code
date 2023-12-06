@@ -28,7 +28,6 @@ function binarySearch(
   testFn: (x: number) => BINARY_SEARCH_TEST_RESULT
 ) {
   const testNumber = start + Math.floor((end - start) / 2);
-  if (end === -1) process.exit(0);
 
   const result = testFn(testNumber);
 
