@@ -168,57 +168,49 @@ export function processPart2(input: string): string {
   let nestCells = 0;
 
   const startCell = getCell(start, grid, fallbackCell);
-  const loopCells = [startCell];
   const [exit] = getExits(startCell);
-  let routeStep = nextRouteStep(start, exit);
-  let routeStepCell = getCell(routeStep.pos, grid, fallbackCell);
+  let routeStep: RouteStep = {
+    pos: start,
+    cameFrom: OPPOSITE_DIRECTION_MAP[exit],
+  };
+  let routeStepCell = startCell;
 
-  while (!loopCells.includes(routeStepCell)) {
-    loopCells.push(routeStepCell);
+  const cleanGrid = grid.map((row) => row.map(() => fallbackCell));
+
+  do {
+    cleanGrid[routeStep.pos[1]][routeStep.pos[0]] = routeStepCell;
     routeStep = nextRouteStep(routeStep.pos, getRouteStepExit(routeStep, grid));
     routeStepCell = getCell(routeStep.pos, grid, fallbackCell);
-  }
+  } while (routeStepCell !== startCell);
 
-  // Remove none loop pipe symbols
-  const cleanGrid = grid.map((row) =>
-    row.map((cell) => (loopCells.includes(cell) ? cell : { ...fallbackCell }))
-  );
-
-  for (let y = 0; y < cleanGrid.length; y++) {
+  for (let y = 1; y < cleanGrid.length - 1; y++) {
     const row = cleanGrid[y];
-    for (let x = 0; x < row.length; x++) {
-      const cell = row[x];
-      // Check if its a loop cell
-      if (loopCells.includes(cell)) continue;
 
-      if (getIsWithinLoop([x, y], cleanGrid)) {
-        nestCells++;
-      }
-    }
+    nestCells += getRowInnerLoopCellCount(row);
   }
 
   return String(nestCells);
 }
 
 /**
- * Trace from cell to the right all the way to the edge of the grid If the row
- * crosses pipes as odd amounts of times the cell is within the pipe loop
+ * Process across the row from left to right.
+ * Switch isInLoop true/false every time you cross a pipe.
  *
- * To allow for pipes going along the row check up exits and down exits
- * independency. When there has been both up and down exits it counts as a loop crossing.
- *
+ * The inner cells are the empty cells while isInLoop is true
  */
-function getIsWithinLoop([x, y]: [number, number], grid: Cell[][]): boolean {
-  const traceRow = grid[y];
-  const traceOffset = x > traceRow.length / 2 ? 1 : -1;
-
-  let isWithinLoop = false;
+function getRowInnerLoopCellCount(row: Cell[]): number {
+  let innerCellCount = 0;
+  let isInLoop = false;
   let pipeHasExitedUp = false;
   let pipeHasExitedDown = false;
-  let traceX = x + traceOffset;
 
-  while (traceRow[traceX] !== undefined) {
-    const cell = traceRow[traceX];
+  for (let x = 0; x < row.length - 1; x++) {
+    const cell = row[x];
+    if (cell === fallbackCell && isInLoop) {
+      innerCellCount++;
+      continue;
+    }
+
     if (cell.U) {
       pipeHasExitedUp = !pipeHasExitedUp;
     }
@@ -226,12 +218,11 @@ function getIsWithinLoop([x, y]: [number, number], grid: Cell[][]): boolean {
       pipeHasExitedDown = !pipeHasExitedDown;
     }
     if (pipeHasExitedUp && pipeHasExitedDown) {
-      isWithinLoop = !isWithinLoop;
+      isInLoop = !isInLoop;
       pipeHasExitedUp = false;
       pipeHasExitedDown = false;
     }
-    traceX += traceOffset;
   }
 
-  return isWithinLoop;
+  return innerCellCount;
 }
