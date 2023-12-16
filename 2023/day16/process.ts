@@ -112,6 +112,123 @@ export function processPart1(input: string): number {
   return energisedCells.size;
 }
 
+type CellLocation = `${number},${number}`;
+type PathCell = `${number},${number}:${Direction}`;
+
+type PathLookup = {
+  cells: Array<CellLocation>;
+  pathLookups: Array<PathLookup>;
+};
+
+const GLOBAL_LOOKUP_MAP = new Map<PathCell, PathLookup>();
+
+function traceBeamPathFast(
+  grid: Grid<Cell>,
+  x: number,
+  y: number,
+  direction: Direction
+): number {
+  const energisedCells = new Set<CellLocation>();
+
+  let currentLookup: PathLookup = {
+    cells: [],
+    pathLookups: [],
+  };
+
+  function checkLookup(pathCell: PathCell, continueTraceFn: () => void) {
+    const lookup = GLOBAL_LOOKUP_MAP.get(pathCell);
+
+    if (!lookup) {
+      const _currentLookup = currentLookup;
+      const newLookup: PathLookup = {
+        cells: [],
+        pathLookups: [],
+      };
+      GLOBAL_LOOKUP_MAP.set(pathCell, newLookup);
+      currentLookup.pathLookups.push(newLookup);
+
+      currentLookup = newLookup;
+      continueTraceFn();
+      currentLookup = _currentLookup;
+
+      return;
+    }
+
+    const lookupStack = [lookup];
+    const seenLookups = new Set<PathLookup>();
+
+    while (lookupStack.length > 0) {
+      const _lookup = lookupStack.pop()!;
+
+      if (seenLookups.has(_lookup)) continue;
+      seenLookups.add(_lookup);
+
+      for (const cell of _lookup.cells) {
+        energisedCells.add(cell);
+      }
+
+      lookupStack.push(..._lookup.pathLookups);
+    }
+  }
+
+  function tracePathRecursive(x: number, y: number, direction: Direction) {
+    if (x < 0 || x >= grid.width || y < 0 || y >= grid.height) return;
+
+    const beamPathCell = `${x},${y}:${direction}` as const;
+    const location = `${x},${y}` as const;
+
+    energisedCells.add(location);
+    currentLookup.cells.push(location);
+
+    function continueBeam(_direction: Direction = direction) {
+      const [_x, _y] = nextPosition(x, y, _direction);
+      tracePathRecursive(_x, _y, _direction);
+    }
+
+    const isHorizontal = direction === ">" || direction === "<";
+    const cell = grid.rows[y][x];
+
+    switch (cell) {
+      case ".":
+        continueBeam();
+        break;
+
+      case "|":
+        if (isHorizontal) {
+          checkLookup(beamPathCell, () => {
+            continueBeam("^");
+            continueBeam("v");
+          });
+        } else {
+          continueBeam();
+        }
+        break;
+
+      case "-":
+        if (isHorizontal) {
+          continueBeam();
+        } else {
+          checkLookup(beamPathCell, () => {
+            continueBeam("<");
+            continueBeam(">");
+          });
+        }
+        break;
+
+      case "\\":
+      case "/":
+        checkLookup(beamPathCell, () => {
+          continueBeam(refectionMaps[cell][direction]);
+        });
+        break;
+    }
+  }
+
+  tracePathRecursive(x, y, direction);
+
+  return energisedCells.size;
+}
+
 export function processPart2(input: string): number {
   const grid = parseGrid(input, { cellSchema });
 
@@ -120,16 +237,16 @@ export function processPart2(input: string): number {
   for (let x = 0; x < grid.width; x++) {
     max = Math.max(
       max,
-      traceBeamPath(grid, x, 0, "v").energisedCells.size,
-      traceBeamPath(grid, x, grid.height - 1, "^").energisedCells.size
+      traceBeamPathFast(grid, x, 0, "v"),
+      traceBeamPathFast(grid, x, grid.height - 1, "^")
     );
   }
 
   for (let y = 0; y < grid.height; y++) {
     max = Math.max(
       max,
-      traceBeamPath(grid, 0, y, ">").energisedCells.size,
-      traceBeamPath(grid, grid.width - 1, y, "<").energisedCells.size
+      traceBeamPathFast(grid, 0, y, ">"),
+      traceBeamPathFast(grid, grid.width - 1, y, "<")
     );
   }
 
