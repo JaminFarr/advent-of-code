@@ -118,6 +118,25 @@ function createTrench(wallDescriptions: Array<WallDescription>): Trench {
   };
 }
 
+type VerticalSections = {
+  y: number;
+  count: number;
+};
+function createVerticalSections(trench: Trench): Array<VerticalSections> {
+  const ySet = new Set<number>(
+    trench.walls.flatMap((wall) => [wall.y1, wall.y1 + 1])
+  );
+  const ys = Array.from(ySet).sort((a, b) => a - b);
+  const sections: Array<VerticalSections> = [];
+  for (let i = 0; i < ys.length - 1; i++) {
+    sections.push({
+      y: ys[i],
+      count: ys[i + 1] - ys[i],
+    });
+  }
+  return sections;
+}
+
 function trenchArea(trench: Trench): number {
   const verticalEdges = trench.walls
     .filter(
@@ -131,8 +150,11 @@ function trenchArea(trench: Trench): number {
     }))
     .sort((a, b) => a.x - b.x);
 
+  // Speed up part2
+  const verticalSections = createVerticalSections(trench);
+
   let area = 0;
-  for (let y = trench.minY; y <= trench.maxY; y++) {
+  for (const { y, count } of verticalSections) {
     const rowEdges = verticalEdges.filter(
       (edge) => edge.yMin <= y && y <= edge.yMax
     );
@@ -154,7 +176,7 @@ function trenchArea(trench: Trench): number {
       }
 
       if (!isUpWithin && !isDownWithin && startX !== null) {
-        area += x - startX + 1;
+        area += (x - startX + 1) * count;
         startX = null;
       }
     }
