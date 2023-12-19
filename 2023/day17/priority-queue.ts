@@ -3,24 +3,19 @@ export function createPriorityQueue<TItem>() {
   const queue: Array<QueueItem> = [];
 
   function dequeue() {
-    sort();
     const [_priority, item] = queue.shift()!;
     return item;
-  }
-
-  let isSorted = true;
-  function sort() {
-    if (!isSorted) {
-      queue.sort((a, b) => a[0] - b[0]);
-      isSorted = true;
-    }
   }
 
   return {
     enqueue: (item: TItem, priority: number) => {
       const queueItem = [priority, item] satisfies QueueItem;
-      queue.push(queueItem);
-      isSorted = false;
+      const insertIndex = queue.findIndex((item) => item[0] > priority);
+      if (insertIndex === -1) {
+        queue.push(queueItem);
+      } else {
+        queue.splice(insertIndex, 0, queueItem);
+      }
     },
     dequeue,
     [Symbol.iterator]: function* () {
