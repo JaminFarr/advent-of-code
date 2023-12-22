@@ -1,0 +1,170 @@
+digraph aocDay20 {
+  np [color=blue]
+  rt [color=blue]
+  th [color=blue]
+  gt [color=blue]
+  zf [color=blue]
+  sg [color=blue]
+  vn [color=blue]
+  qh [color=blue]
+  rv [color=blue]
+  br [color=blue]
+  pc [color=blue]
+  dk [color=blue]
+  qq [color=blue]
+  ns [color=blue]
+  bd [color=blue]
+  ms [color=blue]
+  dg [color=blue]
+  cf [color=blue]
+  kc [color=blue]
+  ds [color=blue]
+  zj [color=blue]
+  qm [color=blue]
+  gl [color=blue]
+  hf [color=blue]
+  hx [color=blue]
+  fk [color=blue]
+  tp [color=blue]
+  gg [color=blue]
+  xl [color=blue]
+  vm [color=blue]
+  qf [color=blue]
+  px [color=blue]
+  fs [color=blue]
+  bc [color=blue]
+  vr [color=blue]
+  xv [color=blue]
+  rq [color=blue]
+  cq [color=blue]
+  xz [color=blue]
+  qd [color=blue]
+  jq [color=blue]
+  jp [color=blue]
+  rj [color=blue]
+  tv [color=blue]
+  cd [color=blue]
+  ld [color=blue]
+  kz [color=blue]
+  gj [color=blue]
+
+  lv [shape=box]
+  vc [shape=box]
+  lz [shape=box]
+  gr [shape=box]
+  st [shape=box]
+  tn [shape=box]
+  hh [shape=box]
+  db [shape=box]
+  dt [shape=box]
+
+  np -> vn;
+  lv -> rx;
+  rt -> ns;
+  th -> bc;
+  gt -> rt;
+  gt -> db;
+  zf -> db;
+  zf -> np;
+  sg -> fs;
+  sg -> gr;
+  vn -> db;
+  vn -> zj;
+  qh -> ms;
+  qh -> lz;
+  rv -> vc;
+  rv -> rj;
+  br -> qh;
+  br -> lz;
+  pc -> vc;
+  pc -> jq;
+  dk -> xl;
+  qq -> gr;
+  qq -> th;
+  ns -> xv;
+  vc -> gl;
+  vc -> tv;
+  vc -> pc;
+  vc -> qd;
+  vc -> dg;
+  vc -> tn;
+  bd -> vm;
+  bd -> lz;
+  ms -> bd;
+  ms -> lz;
+  dg -> rv;
+  cf -> vc;
+  kc -> db;
+  kc -> cq;
+  ds -> lz;
+  ds -> dk;
+  zj -> kc;
+  qm -> zf;
+  qm -> db;
+  gl -> qd;
+  hf -> db;
+  hx -> gr;
+  hx -> px;
+  fk -> vc;
+  fk -> tv;
+  tp -> ld;
+  gg -> gr;
+  gg -> rq;
+  xl -> lz;
+  xl -> gj;
+  vm -> lz;
+  qf -> vr;
+  qf -> lz;
+  px -> qq;
+  fs -> tp;
+  bc -> gr;
+  bc -> cd;
+  vr -> lz;
+  vr -> xz;
+  xv -> db;
+  xv -> qm;
+  rq -> gr;
+  cq -> db;
+  cq -> hf;
+  lz -> dt;
+  lz -> qf;
+  lz -> dk;
+  gr -> tp;
+  gr -> fs;
+  gr -> px;
+  gr -> st;
+  gr -> sg;
+  gr -> th;
+  st -> lv;
+  tn -> lv;
+  xz -> lz;
+  xz -> ds;
+  hh -> lv;
+  db -> np;
+  db -> gt;
+  db -> zj;
+  db -> ns;
+  db -> rt;
+  db -> hh;
+  qd -> dg;
+  jq -> fk;
+  jq -> vc;
+  jp -> vc;
+  jp -> cf;
+  rj -> vc;
+  rj -> jp;
+  tv -> kz;
+  cd -> gr;
+  cd -> gg;
+  dt -> lv;
+  ld -> gr;
+  ld -> hx;
+  kz -> vc;
+  kz -> gl;
+  broadcaster -> pc;
+  broadcaster -> sg;
+  broadcaster -> qf;
+  broadcaster -> gt;
+  gj -> br;
+  gj -> lz;
+}
